@@ -13,11 +13,22 @@ class UserSchema(BaseModel):
 
 
 class UserDB(UserSchema):
-    id: str
+    id: int
 
 
 class UserPublic(BaseModel):
-    id: str
+    id: int
     username: str
     email: EmailStr
     tipo_usuario: str
+
+
+class UserList(BaseModel):
+    users: list[UserPublic]
+
+
+class ProjetoSchema(BaseModel):
+    nome: str
+    cliente: str
+    status: str
+    alcada_criador: str
