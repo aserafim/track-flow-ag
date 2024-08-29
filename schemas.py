@@ -5,14 +5,14 @@ class Message(BaseModel):
     message: str
 
 
-class UserSchema(BaseModel):
+class clienteschema(BaseModel):
     username: str
     email: EmailStr
     password: str
     tipo_usuario: str
 
 
-class UserDB(UserSchema):
+class UserDB(clienteschema):
     id: int
 
 
@@ -24,7 +24,7 @@ class UserPublic(BaseModel):
 
 
 class UserList(BaseModel):
-    users: list[UserPublic]
+    clientes: list[UserPublic]
 
 
 class ProjetoSchema(BaseModel):

@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 def test_add_usuario(client):
     response = client.post(
-        '/users/',
+        '/clientes/',
         json={
             'username': 'teste1',
             'email': 'teste@email.com',
@@ -22,11 +22,11 @@ def test_add_usuario(client):
 
 
 def test_lista_usuarios(client):
-    response = client.get('/users/')
+    response = client.get('/clientes/')
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {
-        'users': [
+        'clientes': [
             {
                 'id': 1,
                 'username': 'teste1',
@@ -39,7 +39,7 @@ def test_lista_usuarios(client):
 
 def test_update_user(client):
     response = client.put(
-        '/users/1',
+        '/clientes/1',
         json={
             'username': 'string',
             'email': 'user@example.com',
@@ -59,7 +59,7 @@ def test_update_user(client):
 
 def test_update_user_not_found(client):
     response = client.put(
-        '/users/0',
+        '/clientes/0',
         json={
             'username': 'string',
             'email': 'user@example.com',
@@ -68,6 +68,24 @@ def test_update_user_not_found(client):
             'id': 0,
         },
     )
+
+    assert response.json() == {'detail': 'Usuário não encontrado'}
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
+def test_delete_user(client):
+    response = client.delete('/clientes/1')
+
+    assert response.json() == {
+        'username': 'string',
+        'email': 'user@example.com',
+        'tipo_usuario': 'string',
+        'id': 1,
+    }
+
+
+def test_delete_user_not_found(client):
+    response = client.delete('/clientes/0')
 
     assert response.json() == {'detail': 'Usuário não encontrado'}
     assert response.status_code == HTTPStatus.BAD_REQUEST

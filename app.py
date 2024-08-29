@@ -7,7 +7,7 @@ from schemas import (
     UserDB,
     UserList,
     UserPublic,
-    UserSchema,
+    clienteschema,
 )
 
 app = FastAPI()
@@ -16,21 +16,23 @@ database = []  # banco de dados provisório
 pjdatabase = []
 
 
-@app.post('/users/', status_code=HTTPStatus.CREATED, response_model=UserPublic)
-def add_usuario(user: UserSchema):
+@app.post(
+    '/clientes/', status_code=HTTPStatus.CREATED, response_model=UserPublic
+)
+def add_usuario(user: clienteschema):
     user_with_id = UserDB(**user.model_dump(), id=len(database) + 1)
     database.append(user_with_id)
 
     return user_with_id
 
 
-@app.get('/users/', response_model=UserList, status_code=HTTPStatus.OK)
+@app.get('/clientes/', response_model=UserList, status_code=HTTPStatus.OK)
 def lista_usuarios():
-    return {'users': database}
+    return {'clientes': database}
 
 
-@app.put('/users/{user_id}', response_model=UserPublic)
-def altera_usuario(user_id: int, user: UserSchema):
+@app.put('/clientes/{user_id}', response_model=UserPublic)
+def altera_usuario(user_id: int, user: clienteschema):
     if user_id < 1 or user_id > len(database) + 1:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST, detail='Usuário não encontrado'
@@ -40,16 +42,24 @@ def altera_usuario(user_id: int, user: UserSchema):
     return user_with_id
 
 
-@app.put('/projetos/', status_code=HTTPStatus.OK)
-def altera_projetos(user: UserPublic, projeto: ProjetoSchema): ...
+@app.delete('/clientes/{user_id}', response_model=UserPublic)
+def delete_user(user_id: int):
+    if user_id < 1 or user_id > len(database) + 1:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST, detail='Usuário não encontrado'
+        )
+
+    user_with_id = database[user_id - 1]
+    del database[user_id - 1]
+    return user_with_id
 
 
-@app.post('/projetos/', status_code=HTTPStatus.CREATED)
-def add_projeto(
-    projeto: ProjetoSchema,
+@app.post(
+    '/projetos/',
     status_code=HTTPStatus.CREATED,
     response_model=ProjetoSchema,
-):
+)
+def add_projeto(projeto: ProjetoSchema):
     if projeto.alcada_criador != ('G' or 'C'):
         raise HTTPException(
             status_code=HTTPStatus.UNAUTHORIZED,
@@ -59,3 +69,7 @@ def add_projeto(
         projeto.status = 'CRIADO'
         pjdatabase.append(projeto)
         return projeto
+
+
+@app.put('/projetos/', status_code=HTTPStatus.OK)
+def altera_projetos(user: UserPublic, projeto: ProjetoSchema): ...
