@@ -3,73 +3,73 @@ from http import HTTPStatus
 from fastapi import FastAPI, HTTPException
 
 from schemas import (
+    ClienteDB,
+    ClienteList,
+    ClientePublic,
+    ClienteSchema,
+    ProjetoDB,
     ProjetoSchema,
-    UserDB,
-    UserList,
-    UserPublic,
-    clienteschema,
 )
 
 app = FastAPI()
 
-database = []  # banco de dados provisório
-pjdatabase = []
+clientes_db = []  # banco de dados provisório
+projetos_db = []  # banco de dados provisório
+atividades_db = []  # banco de dados provisório
 
 
-@app.post(
-    '/clientes/', status_code=HTTPStatus.CREATED, response_model=UserPublic
-)
-def add_usuario(user: clienteschema):
-    user_with_id = UserDB(**user.model_dump(), id=len(database) + 1)
-    database.append(user_with_id)
+@app.post('/clientes/', status_code=HTTPStatus.CREATED, response_model=ClientePublic)
+def add_usuario(user: ClienteSchema):
+    user_with_id = ClienteDB(**user.model_dump(), id=len(clientes_db) + 1)
+    clientes_db.append(user_with_id)
 
     return user_with_id
 
 
-@app.get('/clientes/', response_model=UserList, status_code=HTTPStatus.OK)
+@app.get('/clientes/', response_model=ClienteList, status_code=HTTPStatus.OK)
 def lista_usuarios():
-    return {'clientes': database}
+    return {'clientes': clientes_db}
 
 
-@app.put('/clientes/{user_id}', response_model=UserPublic)
-def altera_usuario(user_id: int, user: clienteschema):
-    if user_id < 1 or user_id > len(database) + 1:
+@app.put('/clientes/{user_id}', response_model=ClientePublic)
+def altera_usuario(user_id: int, user: ClienteSchema):
+    if user_id < 1 or user_id > len(clientes_db) + 1:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST, detail='Usuário não encontrado'
         )
-    user_with_id = UserDB(**user.model_dump(), id=user_id)
-    database[user_id - 1] = user_with_id
+    user_with_id = ClienteDB(**user.model_dump(), id=user_id)
+    clientes_db[user_id - 1] = user_with_id
     return user_with_id
 
 
-@app.delete('/clientes/{user_id}', response_model=UserPublic)
+@app.delete('/clientes/{user_id}', response_model=ClientePublic)
 def delete_user(user_id: int):
-    if user_id < 1 or user_id > len(database) + 1:
+    if user_id < 1 or user_id > len(clientes_db) + 1:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST, detail='Usuário não encontrado'
         )
 
-    user_with_id = database[user_id - 1]
-    del database[user_id - 1]
+    user_with_id = clientes_db[user_id - 1]
+    del clientes_db[user_id - 1]
     return user_with_id
 
 
 @app.post(
     '/projetos/',
     status_code=HTTPStatus.CREATED,
-    response_model=ProjetoSchema,
+    response_model=ProjetoDB,
 )
 def add_projeto(projeto: ProjetoSchema):
-    if projeto.alcada_criador != ('G' or 'C'):
+    project_with_id = ProjetoDB(**projeto.model_dump(), id=len(projetos_db) + 1)
+    if not any(cliente.id == project_with_id.cliente_id for cliente in clientes_db):
         raise HTTPException(
-            status_code=HTTPStatus.UNAUTHORIZED,
-            detail='Usuário não autorizado',
+            status_code=HTTPStatus.NOT_FOUND, detail='Cliente não encontrado'
         )
     else:
-        projeto.status = 'CRIADO'
-        pjdatabase.append(projeto)
-        return projeto
+        project_with_id.status = 'CRIADO'
+        projetos_db.append(project_with_id)
+        return project_with_id
 
 
-@app.put('/projetos/', status_code=HTTPStatus.OK)
-def altera_projetos(user: UserPublic, projeto: ProjetoSchema): ...
+@app.put('/projetos/{project_id}', status_code=HTTPStatus.OK)
+def altera_projetos(user: ClientePublic, projeto: ProjetoSchema): ...

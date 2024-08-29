@@ -37,7 +37,7 @@ def test_lista_usuarios(client):
     }
 
 
-def test_update_user(client):
+def test_update_cliente(client):
     response = client.put(
         '/clientes/1',
         json={
@@ -57,7 +57,7 @@ def test_update_user(client):
     }
 
 
-def test_update_user_not_found(client):
+def test_update_cliente_not_found(client):
     response = client.put(
         '/clientes/0',
         json={
@@ -73,7 +73,41 @@ def test_update_user_not_found(client):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_delete_user(client):
+def test_cria_projeto(client):
+    response = client.post(
+        '/projetos/',
+        json={
+            'nome': 'teste',
+            'cliente_id': 1,
+            'status': 'teste',
+        },
+    )
+
+    assert response.json() == {
+        'id': 1,
+        'nome': 'teste',
+        'cliente_id': 1,
+        'status': 'CRIADO',
+    }
+
+    assert response.status_code == HTTPStatus.CREATED
+
+
+def test_cria_projeto_cliente_nao_encontrado(client):
+    response = client.post(
+        '/projetos/',
+        json={
+            'nome': 'teste',
+            'cliente_id': 0,
+            'status': 'teste',
+        },
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'Cliente não encontrado'}
+
+
+def test_delete_cliente(client):
     response = client.delete('/clientes/1')
 
     assert response.json() == {
@@ -84,44 +118,8 @@ def test_delete_user(client):
     }
 
 
-def test_delete_user_not_found(client):
+def test_delete_cliente_not_found(client):
     response = client.delete('/clientes/0')
 
     assert response.json() == {'detail': 'Usuário não encontrado'}
     assert response.status_code == HTTPStatus.BAD_REQUEST
-
-
-def test_cria_projeto(client):
-    response = client.post(
-        '/projetos/',
-        json={
-            'nome': 'teste',
-            'cliente': 'teste',
-            'status': 'teste',
-            'alcada_criador': 'G',
-        },
-    )
-
-    assert response.json() == {
-        'nome': 'teste',
-        'cliente': 'teste',
-        'status': 'CRIADO',
-        'alcada_criador': 'G',
-    }
-
-    assert response.status_code == HTTPStatus.CREATED
-
-
-def test_cria_projeto_usuario_nao_autorizado(client):
-    response = client.post(
-        'projetos',
-        json={
-            'nome': 'teste',
-            'cliente': 'teste',
-            'status': 'teste',
-            'alcada_criador': 'A',
-        },
-    )
-
-    assert response.status_code == HTTPStatus.UNAUTHORIZED
-    assert response.json() == {'detail': 'Usuário não autorizado'}
