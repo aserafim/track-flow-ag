@@ -21,5 +21,17 @@ Este projeto é uma aplicação web desenvolvida com FastAPI para gerenciar clie
 1. **Clone o Repositório**
 
    ```sh
-   git clone https://github.com/seu-usuario/seu-repositorio.git
+   git clone https://github.com/aserafim/track-flow-ag.git
    cd seu-repositorio
+
+2. **Instale o Poetry**
+
+   ```sh
+    curl -sSL https://install.python-poetry.org | python3 -
+
+3. **Clone o Repositório**
+```sh
+poetry install
+
+
+4. 
