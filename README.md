@@ -1,4 +1,4 @@
-# FastAPI Projeto de Gerenciamento
+# Projeto Track Flow AG
 
 Este projeto é uma aplicação web desenvolvida com FastAPI para gerenciar clientes, projetos e atividades. A aplicação expõe endpoints RESTful para criar, listar, atualizar e excluir clientes, projetos e atividades.
 
