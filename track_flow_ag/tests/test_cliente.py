@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 
-def test_add_usuario(client):
+def test_add_cliente(client):
     response = client.post(
         '/clientes/',
         json={
@@ -14,21 +14,33 @@ def test_add_usuario(client):
 
     assert response.status_code == HTTPStatus.CREATED
     assert response.json() == {
-        'id': 1,
+        'id_cliente': 1,
         'username': 'teste1',
         'email': 'teste@email.com',
         'tipo_usuario': 'G',
     }
 
 
-def test_lista_usuarios(client):
+def test_lista_clientes(client):
+    # Primeiro, adicionar um cliente para
+    # garantir que o banco de dados não esteja vazio
+    client.post(
+        '/clientes/',
+        json={
+            'username': 'teste1',
+            'email': 'teste@email.com',
+            'password': 'teste_pass',
+            'tipo_usuario': 'G',
+        },
+    )
+
     response = client.get('/clientes/')
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {
         'clientes': [
             {
-                'id': 1,
+                'id_cliente': 1,
                 'username': 'teste1',
                 'email': 'teste@email.com',
                 'tipo_usuario': 'G',
@@ -38,6 +50,16 @@ def test_lista_usuarios(client):
 
 
 def test_update_cliente(client):
+    response = client.post(
+        '/clientes/',
+        json={
+            'username': 'teste1',
+            'email': 'teste@email.com',
+            'password': 'teste_pass',
+            'tipo_usuario': 'G',
+        },
+    )
+
     response = client.put(
         '/clientes/1',
         json={
@@ -45,7 +67,7 @@ def test_update_cliente(client):
             'email': 'user@example.com',
             'password': 'string',
             'tipo_usuario': 'string',
-            'id': 1,
+            'id_cliente': 1,
         },
     )
 
@@ -53,7 +75,7 @@ def test_update_cliente(client):
         'username': 'string',
         'email': 'user@example.com',
         'tipo_usuario': 'string',
-        'id': 1,
+        'id_cliente': 1,
     }
 
 
@@ -73,48 +95,24 @@ def test_update_cliente_not_found(client):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_cria_projeto(client):
-    response = client.post(
-        '/projetos/',
-        json={
-            'nome': 'teste',
-            'cliente_id': 1,
-            'status': 'teste',
-        },
-    )
-
-    assert response.json() == {
-        'id': 1,
-        'nome': 'teste',
-        'cliente_id': 1,
-        'status': 'CRIADO',
-    }
-
-    assert response.status_code == HTTPStatus.CREATED
-
-
-def test_cria_projeto_cliente_nao_encontrado(client):
-    response = client.post(
-        '/projetos/',
-        json={
-            'nome': 'teste',
-            'cliente_id': 0,
-            'status': 'teste',
-        },
-    )
-
-    assert response.status_code == HTTPStatus.NOT_FOUND
-    assert response.json() == {'detail': 'Cliente não encontrado'}
-
-
 def test_delete_cliente(client):
+    response = client.post(
+        '/clientes/',
+        json={
+            'username': 'teste1',
+            'email': 'teste@email.com',
+            'password': 'teste_pass',
+            'tipo_usuario': 'G',
+        },
+    )
+
     response = client.delete('/clientes/1')
 
     assert response.json() == {
-        'username': 'string',
-        'email': 'user@example.com',
-        'tipo_usuario': 'string',
-        'id': 1,
+        'username': 'teste1',
+        'email': 'teste@email.com',
+        'tipo_usuario': 'G',
+        'id_cliente': 1,
     }
 
 

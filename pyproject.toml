@@ -23,7 +23,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
-line-length = 85
+line-length = 120
 extend-exclude = ['migrations']
 
 [tool.ruff.lint]
@@ -41,7 +41,7 @@ addopts = '-p no:warnings'
 [tool.taskipy.tasks]
 lint = 'ruff check . && ruff check . --diff'
 format = 'ruff check . --fix && ruff format .'
-run = 'fastapi dev app.py'
+run = 'fastapi dev track_flow_ag/app/app.py'
 pre_test = 'task lint'
 test = 'pytest -s -x --cov=. -vv'
 post_test = 'coverage html'
